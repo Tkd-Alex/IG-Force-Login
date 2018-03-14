@@ -12,12 +12,12 @@ def login():
     session = Bot(
         username=_data['username'],
         password=_data['password'],
-        bypass_suspicious_attempt=True,
+        proxy_address=_data['proxy_address'],
+        proxy_port=int(_data['proxy_port']),
+        bypass_suspicious_attempt=_data['bypass_suspicious_attempt'],
+        verify_code_mail=_data['verify_code_mail'],
         nogui=False,
-        headless_browser=False,
-        verify_code_mail=False,
-        use_firefox=False,
-        page_delay=25
+        headless_browser=False
     )
     status, message = session.login()
     js = json.dumps({ 'result': status, 'message': message })
@@ -33,12 +33,12 @@ def code():
     session = Bot(
         username=_data['username'],
         password=_data['password'],
-        bypass_suspicious_attempt=False,
+        proxy_address=_data['proxy_address'],
+        proxy_port=int(_data['proxy_port']),
+        bypass_suspicious_attempt=_data['bypass_suspicious_attempt'],
+        verify_code_mail=_data['verify_code_mail'],
         nogui=False,
-        headless_browser=False,
-        verify_code_mail=False,
-        use_firefox=False,
-        page_delay=25
+        headless_browser=False
     )
     status, message = session.code(_data['code'])
     js = json.dumps({ 'result': status, 'message': message })
