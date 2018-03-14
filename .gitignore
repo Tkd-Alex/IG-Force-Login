@@ -1,0 +1,8 @@
+chromedriver
+cookies
+cookies/*
+sessions
+sessions/*
+__pycache__
+__pycache__/*
+geckodriver.log
