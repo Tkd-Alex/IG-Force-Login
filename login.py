@@ -156,7 +156,7 @@ def login_user(browser,
             return status, message
 
     try:
-        if 'challenge' in browser.current_url:
+        if 'challenge' in browser.current_url and bypass_suspicious_attempt is False:
             # Challenge required save session and ask user what he want to do
             pickle.dump({'cookie': browser.get_cookies(), 'url': browser.current_url}, open('sessions/{}_session.pkl'.format(username), 'wb'))
             print("Challenge required. Ask a code or confirm 'was me'")
