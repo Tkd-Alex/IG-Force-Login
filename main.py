@@ -9,15 +9,19 @@ app = Flask(__name__)
 @app.route('/login', methods=['POST'])
 def login():
     _data = request.get_json()
+    proxy_address             = _data['proxy_address']              if 'proxy_address' in _data else "" 
+    proxy_port                = _data['proxy_port']                 if 'proxy_port' in _data else 0
+    bypass_suspicious_attempt = _data['bypass_suspicious_attempt']  if 'bypass_suspicious_attempt' in _data else False
+    verify_code_mail          = _data['verify_code_mail']           if 'verify_code_mail' in _data else False
     session = Bot(
         username=_data['username'],
         password=_data['password'],
-        proxy_address=_data['proxy_address'],
-        proxy_port=int(_data['proxy_port']),
-        bypass_suspicious_attempt=_data['bypass_suspicious_attempt'],
-        verify_code_mail=_data['verify_code_mail'],
-        nogui=False,
-        headless_browser=False
+        proxy_address=proxy_address,
+        proxy_port=int(proxy_port),
+        bypass_suspicious_attempt=bypass_suspicious_attempt,
+        verify_code_mail=verify_code_mail,
+        nogui=True,
+        headless_browser=True
     )
     status, message = session.login()
     js = json.dumps({ 'result': status, 'message': message })
@@ -30,15 +34,19 @@ def login():
 @app.route('/code', methods=['POST'])
 def code():
     _data = request.get_json()
+    proxy_address              = _data['proxy_address']              if 'proxy_address' in _data else ""
+    proxy_port                 = _data['proxy_port']                 if 'proxy_port' in _data else 0
+    bypass_suspicious_attempt  = _data['bypass_suspicious_attempt']  if 'bypass_suspicious_attempt' in _data else False
+    verify_code_mail           = _data['verify_code_mail']           if 'verify_code_mail' in _data else False
     session = Bot(
         username=_data['username'],
         password=_data['password'],
-        proxy_address=_data['proxy_address'],
-        proxy_port=int(_data['proxy_port']),
-        bypass_suspicious_attempt=_data['bypass_suspicious_attempt'],
-        verify_code_mail=_data['verify_code_mail'],
-        nogui=False,
-        headless_browser=False
+        proxy_address=proxy_address,
+        proxy_port=int(proxy_port),
+        bypass_suspicious_attempt=bypass_suspicious_attempt,
+        verify_code_mail=verify_code_mail,
+        nogui=True,
+        headless_browser=True
     )
     status, message = session.code(_data['code'])
     js = json.dumps({ 'result': status, 'message': message })
