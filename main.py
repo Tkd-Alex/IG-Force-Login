@@ -21,7 +21,8 @@ def login():
         bypass_suspicious_attempt=bypass_suspicious_attempt,
         verify_code_mail=verify_code_mail,
         nogui=True,
-        headless_browser=True
+        headless_browser=True,
+        page_delay=15
     )
     status, message = session.login()
     js = json.dumps({ 'result': status, 'message': message })
@@ -46,7 +47,8 @@ def code():
         bypass_suspicious_attempt=bypass_suspicious_attempt,
         verify_code_mail=verify_code_mail,
         nogui=True,
-        headless_browser=True
+        headless_browser=True,
+        page_delay=15
     )
     status, message = session.code(_data['code'])
     js = json.dumps({ 'result': status, 'message': message })
@@ -64,4 +66,4 @@ def hello():
 if __name__ == '__main__':
     if not os.path.exists("sessions"):
         os.makedirs("sessions")
-    app.run(host='0.0.0.0', port=4587, threaded=True, debug=True)
+    app.run(host='0.0.0.0', port=4587, threaded=True, debug=False)
