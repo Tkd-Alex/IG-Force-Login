@@ -9,6 +9,7 @@ def bypass_suspicious_login(browser, verify_code_mail, username):
     try:
         close_button = browser.find_element_by_xpath("[text()='Close']")
         ActionChains(browser).move_to_element(close_button).click().perform()
+        sleep(0.1)
         print("[{}]\tClick 'Close' button".format(username))
     except NoSuchElementException:
         pass
@@ -16,7 +17,16 @@ def bypass_suspicious_login(browser, verify_code_mail, username):
     try:
         this_was_me_button = browser.find_element_by_xpath("//button[@name='choice'][text()='This Was Me']")
         ActionChains(browser).move_to_element(this_was_me_button).click().perform()
+        sleep(0.1)
         print("[{}]\tClick 'This Was Me'".format(username))
+    except NoSuchElementException:
+        pass
+
+    try:
+        back_button = browser.find_element_by_xpath("//a[@class='_rg5d7']")
+        ActionChains(browser).move_to_element(back_button).click().perform()
+        sleep(0.1)
+        print("[{}]\tClick 'Go Back' link".format(username))
     except NoSuchElementException:
         pass
 
@@ -44,7 +54,7 @@ def bypass_suspicious_login(browser, verify_code_mail, username):
      .perform())
     print("[{}]\tClick 'Send Security Code' button".format(username))
 
-    print('[{}]\tInstagram detected an unusual login attempt')
+    print('[{}]\tInstagram detected an unusual login attempt'.format(username))
     if verify_code_mail:
         print('[{}]\tA security code wast sent to your {}'.format(username, user_email))
         message = 'A security code wast sent to your {}'.format(user_email)
@@ -166,7 +176,7 @@ def login_user(browser,
         if error_message != None and error_message != '':
             print("[{}]\tCredentials are invalid".format(username))            
             return False, error_message
-    except NoSuchElementException:
+    except:
         pass
 
     if bypass_suspicious_attempt is True:
@@ -179,7 +189,7 @@ def login_user(browser,
             # Challenge required save session and ask user what he want to do
             pickle.dump({'cookie': browser.get_cookies(), 'url': browser.current_url}, open('sessions/{}_session.pkl'.format(username), 'wb'))
             print("[{}]\tChallenge required. Ask a code or confirm 'was me'".format(username))
-            return False, "Challenge required. Ask a code or confirm 'was me'"
+            return False, "Chalelnge required. Ask a code or confirm 'was me'"
     except:
         pass
 

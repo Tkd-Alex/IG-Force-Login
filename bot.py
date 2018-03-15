@@ -115,7 +115,7 @@ class Bot:
         status, message = login_user(self.browser, self.username, self.password, self.switch_language, self.bypass_suspicious_attempt, self.verify_code_mail) 
         if not status:
             self.aborting = True
-            print('[{}]\nLogin error!'.format(self.username))
+            print('[{}]\tLogin error!'.format(self.username))
             return status, message
         else:
             return status, message
@@ -124,7 +124,7 @@ class Bot:
         status, message = send_code(self.browser, self.username, code)
         if not status:
             self.aborting = True
-            print('[{}]\nLogin error!'.format(self.username))
+            print('[{}]\tLogin error!'.format(self.username))
             return status, message
         else:
             return status, message
