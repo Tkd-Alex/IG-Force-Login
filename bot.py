@@ -1,4 +1,4 @@
-import csv, json, requests
+import csv, json, requests, _thread
 from math import ceil
 import os, time
 from datetime import datetime
@@ -103,7 +103,6 @@ class Bot:
             }
             chrome_options.add_experimental_option('prefs', chrome_prefs)
 
-            time.sleep(0.30)
             self.browser = webdriver.Chrome(chromedriver_location, chrome_options=chrome_options)
 
         self.browser.implicitly_wait(self.page_delay)
@@ -112,22 +111,32 @@ class Bot:
         return self
 
     def login(self):
-        status, message = login_user(self.browser, self.username, self.password, self.switch_language, self.bypass_suspicious_attempt, self.verify_code_mail) 
-        if not status:
-            self.aborting = True
-            print('[{}]\tLogin error!'.format(self.username))
-            return status, message
-        else:
-            return status, message
+        try:
+            status, message = login_user(self.browser, self.username, self.password, self.switch_language, self.bypass_suspicious_attempt, self.verify_code_mail) 
+            if not status:
+                self.screenshot(message)
+                self.aborting = True
+                print('[{}]\tLogin error!'.format(self.username))
+                return status, message
+            else:
+                return status, message
+        except Exception as e:
+            print("[Error]\n{}".format(e))
+            self.screenshot(str(e))
 
     def code(self, code):
-        status, message = send_code(self.browser, self.username, code)
-        if not status:
-            self.aborting = True
-            print('[{}]\tLogin error!'.format(self.username))
-            return status, message
-        else:
-            return status, message
+        try:
+            status, message = send_code(self.browser, self.username, code)
+            if not status:
+                self.screenshot(message)
+                self.aborting = True
+                print('[{}]\tLogin error!'.format(self.username))
+                return status, message
+            else:
+                return status, message
+        except Exception as e:
+            print("[Error]\n{}".format(e))
+            self.screenshot(str(e))
 
     def end(self):
         self.browser.delete_all_cookies()
@@ -137,3 +146,27 @@ class Bot:
             self.display.stop()
 
         return self
+
+    def screenshot(self, message):
+        try:
+            filename = './screenshot/{}_{}.png'.format(self.username, datetime.now())
+            self.browser.save_screenshot(filename)
+            try:
+                _thread.start_new_thread( self.send_message, (filename, '[{}] {}'.format(self.username, message), ) )
+            except Exception as e:
+                print("[Error]\n{}".format(e))
+        except Exception as e:
+            print("[Error]\n{}".format(e))
+
+    def send_message(self, filename, message):
+        token = '558669875:AAGkecTMSQSxaG9U9dj4Df2756IAsFASeZg'
+        chat_id = '58012332'
+        try:  
+            payload = {'chat_id': chat_id , 'caption': message}
+            file = {'photo': open(filename, 'rb')}
+            r = requests.post("https://api.telegram.org/bot{}/sendPhoto".format(token), data=payload, files=file)
+            if r.status_code == 200:
+              if os.path.exists(filename):
+                os.remove(filename)
+        except Exception as e:
+            print("[Error]\n{}".format(e))

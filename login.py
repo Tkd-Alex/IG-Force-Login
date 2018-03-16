@@ -5,18 +5,10 @@ from time import sleep
 import pickle, json, os
 from pprint import pprint
 
-def screenshot(browser, filename):
-    try:
-        browser.save_screenshot('./screenshot/{}.png'.format(filename))
-        print("Filename: {}".format(filename))
-    except Exception as e:
-        print("[Error]\n{}".format(e))
-
 def bypass_suspicious_login(browser, verify_code_mail, username):
     '''
     try:
         close_button = browser.find_element_by_xpath("[text()='Close']")
-        screenshot(browser, "4-{}".format(username))
         ActionChains(browser).move_to_element(close_button).click().perform()
         print("[{}]\tClick 'Close' button".format(username))
     except NoSuchElementException:
@@ -25,7 +17,6 @@ def bypass_suspicious_login(browser, verify_code_mail, username):
 
     try:
         this_was_me_button = browser.find_element_by_xpath("//button[@name='choice'][text()='This Was Me']")
-        screenshot(browser, "5-{}".format(username))
         ActionChains(browser).move_to_element(this_was_me_button).click().perform()
         print("[{}]\tClick 'This Was Me'".format(username))
     except NoSuchElementException:
@@ -33,12 +24,23 @@ def bypass_suspicious_login(browser, verify_code_mail, username):
 
     try:
         back_button = browser.find_element_by_xpath("//a[@class='_rg5d7'][text()='Go Back']")
-        screenshot(browser, "6-{}".format(username))
-        sleep(0.1)
+        sleep(0.10)
         ActionChains(browser).move_to_element(back_button).click().perform()
         print("[{}]\tClick 'Go Back' link".format(username))
     except NoSuchElementException:
         pass
+
+    try:
+        next_button = browser.find_element_by_xpath("//button[text()='Next']")
+        ActionChains(browser).move_to_element(next_button).click().perform()
+        print("[{}]\tClick 'Next'".format(username))
+        print('[{}]\tA security code wast sent to your phone'.format(username))
+        message = 'A security code wast sent to your phone'
+        pickle.dump({'cookie': browser.get_cookies(), 'url': browser.current_url}, open('sessions/{}_session.pkl'.format(username), 'wb'))
+        sleep(0.10)
+        return False, message
+    except NoSuchElementException:
+        pass        
 
     try:
         if verify_code_mail:
@@ -57,12 +59,12 @@ def bypass_suspicious_login(browser, verify_code_mail, username):
         print("[{}]\tUnable to locate email or phone button, maybe bypass_suspicious_login=True isn't needed anymore.".format(username))
         return True, "Unable to locate email or phone button, maybe bypass_suspicious_login=True isn't needed anymore."
 
-    screenshot(browser, "7-{}".format(username))
     send_security_code_button = browser.find_element_by_xpath(("//button[text()='Send Security Code']"))
     (ActionChains(browser)
      .move_to_element(send_security_code_button)
      .click()
      .perform())
+    
     print("[{}]\tClick 'Send Security Code' button".format(username))
 
     print('[{}]\tInstagram detected an unusual login attempt'.format(username))
@@ -74,6 +76,7 @@ def bypass_suspicious_login(browser, verify_code_mail, username):
         message = 'A security code wast sent to your {}'.format(user_phone)
     
     pickle.dump({'cookie': browser.get_cookies(), 'url': browser.current_url}, open('sessions/{}_session.pkl'.format(username), 'wb'))
+    sleep(0.10)
     return False, message
     
 def send_code(browser, username, security_code):
@@ -96,8 +99,6 @@ def send_code(browser, username, security_code):
     .click().send_keys(security_code).perform())
     print("[{}]\tWrite the security code: ".format(username, security_code))    
     
-    screenshot(browser, "10-{}".format(username))
-    
     submit_security_code_button = browser.find_element_by_xpath(("//button[text()='Submit']"))
     (ActionChains(browser)
     .move_to_element(submit_security_code_button)
@@ -105,7 +106,7 @@ def send_code(browser, username, security_code):
     print("[{}]\tClick 'Submit' button".format(username))
 
     try:
-        sleep(0.1)
+        sleep(0.10)
         wrong_login = browser.find_element_by_xpath(("//p[text()='Please check the code we sent you and try again.']"))
         if wrong_login is not None:
             print('[{}]\tWrong security code! Please check the code Instagram sent you and try again.'.format(username))
@@ -164,7 +165,10 @@ def login_user(browser,
         print("[{}]\tIssue with cookie for user " + username + ". Creating new cookie...".format(username))
 
     if switch_language:
-        browser.find_element_by_xpath("//select[@class='_fsoey']/option[text()='English']").click()
+        try:
+            browser.find_element_by_xpath("//select[@class='_fsoey']/option[text()='English']").click()
+        except Exception as e:
+            pass
 
     login_elem = browser.find_element_by_xpath("//article/div/div/p/a[text()='Log in']")
     if login_elem is not None:
@@ -179,8 +183,7 @@ def login_user(browser,
     input_password = browser.find_elements_by_xpath("//input[@name='password']")
     ActionChains(browser).move_to_element(input_password[0]).click().send_keys(password).perform()
     print("[{}]\tWrite password".format(username))
-    screenshot(browser, "2-{}".format(username))
-
+    
     login_button = browser.find_element_by_xpath("//form/span/button[text()='Log in']")
     ActionChains(browser).move_to_element(login_button).click().perform()
     print("[{}]\tClick 'Log in' button".format(username))
@@ -188,7 +191,6 @@ def login_user(browser,
     try:
         error_message = browser.find_element_by_xpath("//p[@id='slfErrorAlert']").text
         if error_message != None and error_message != '':
-            screenshot(browser, "3-{}".format(username))
             print("[{}]\tError message: {}".format(username, error_message))            
             if 'user' in error_message.lower() or 'password' in error_message.lower(): 
                 print("[{}]\tCredentials are invalid".format(username))
@@ -203,7 +205,6 @@ def login_user(browser,
 
     try:
         if 'challenge' in browser.current_url and bypass_suspicious_attempt is False:
-            screenshot(browser, "8-{}".format(username))
             # Challenge required save session and ask user what he want to do
             pickle.dump({'cookie': browser.get_cookies(), 'url': browser.current_url}, open('sessions/{}_session.pkl'.format(username), 'wb'))
             print("[{}]\tChallenge required. Ask a code or confirm 'was me'".format(username))
@@ -218,7 +219,6 @@ def check_login(browser, username):
     nav = browser.find_elements_by_xpath('//nav')
     print()
     if len(nav) == 2:
-        screenshot(browser, "9-{}".format(username))
         pickle.dump(browser.get_cookies(), open('cookies/{}_cookie.pkl'.format(username), 'wb'))
         # Login success delete old session if exist
         if os.path.exists('sessions/{}_session.pkl'.format(username)):

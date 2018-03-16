@@ -22,7 +22,7 @@ def login():
         verify_code_mail=verify_code_mail,
         nogui=True,
         headless_browser=True,
-        page_delay=25
+        page_delay=10
     )
     status, message = session.login()
     js = json.dumps({ 'result': status, 'message': message })
@@ -48,7 +48,7 @@ def code():
         verify_code_mail=verify_code_mail,
         nogui=True,
         headless_browser=True,
-        page_delay=25
+        page_delay=10
     )
     status, message = session.code(_data['code'])
     js = json.dumps({ 'result': status, 'message': message })
