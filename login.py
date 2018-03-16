@@ -16,7 +16,6 @@ def bypass_suspicious_login(browser, verify_code_mail, username):
         close_button = browser.find_element_by_xpath("[text()='Close']")
         screenshot(browser, "4-{}".format(username))
         ActionChains(browser).move_to_element(close_button).click().perform()
-        sleep(0.1)
         print("[{}]\tClick 'Close' button".format(username))
     except NoSuchElementException:
         pass
@@ -25,16 +24,15 @@ def bypass_suspicious_login(browser, verify_code_mail, username):
         this_was_me_button = browser.find_element_by_xpath("//button[@name='choice'][text()='This Was Me']")
         screenshot(browser, "5-{}".format(username))
         ActionChains(browser).move_to_element(this_was_me_button).click().perform()
-        sleep(0.1)
         print("[{}]\tClick 'This Was Me'".format(username))
     except NoSuchElementException:
         pass
 
     try:
-        back_button = browser.find_element_by_xpath("//a[@class='_rg5d7']")
+        back_button = browser.find_element_by_xpath("//a[@class='_rg5d7'][text()='Go Back']")
         screenshot(browser, "6-{}".format(username))
+        sleep(0.5)
         ActionChains(browser).move_to_element(back_button).click().perform()
-        sleep(0.1)
         print("[{}]\tClick 'Go Back' link".format(username))
     except NoSuchElementException:
         pass
