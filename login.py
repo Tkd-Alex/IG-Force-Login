@@ -5,6 +5,14 @@ from time import sleep
 import pickle, json, os
 from pprint import pprint
 
+def wasme(browser, username):
+    try:
+        this_was_me_button = browser.find_element_by_xpath("//button[@name='choice'][text()='This Was Me']")
+        ActionChains(browser).move_to_element(this_was_me_button).click().perform()
+        print("[{}]\tClick 'This Was Me'".format(username))
+    except NoSuchElementException:
+        pass
+
 def bypass_suspicious_login(browser, verify_code_mail, username):
     '''
     try:
@@ -15,12 +23,7 @@ def bypass_suspicious_login(browser, verify_code_mail, username):
         pass
     '''
 
-    try:
-        this_was_me_button = browser.find_element_by_xpath("//button[@name='choice'][text()='This Was Me']")
-        ActionChains(browser).move_to_element(this_was_me_button).click().perform()
-        print("[{}]\tClick 'This Was Me'".format(username))
-    except NoSuchElementException:
-        pass
+    wasme(browser, username)
 
     try:
         back_button = browser.find_element_by_xpath("//a[@class='_rg5d7'][text()='Go Back']")
@@ -159,6 +162,8 @@ def login_user(browser,
         print("[{}]\tLogin restored from cookie. Delete old session.".format(username))
         if os.path.exists('sessions/{}_session.pkl'.format(username)):
             os.remove('sessions/{}_session.pkl'.format(username))
+        # After login maybe was me checked
+        wasme(browser, username)
         return True, browser.get_cookies()
 
     if cookie_loaded:
@@ -223,6 +228,9 @@ def check_login(browser, username):
         # Login success delete old session if exist
         if os.path.exists('sessions/{}_session.pkl'.format(username)):
             os.remove('sessions/{}_session.pkl'.format(username))
+
+        # After login maybe was me checked
+        wasme(browser, username)
         return True, browser.get_cookies()
     else:
         return False, "Unable to login"
