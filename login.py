@@ -174,7 +174,7 @@ def login_user(browser,
     try:
         error_message = browser.find_element_by_xpath("//p[@id='slfErrorAlert']").text
         if error_message != None and error_message != '':
-            print("[{}]\tError message: ".format(error_message))            
+            print("[{}]\tError message: {}".format(username, error_message))            
             if 'user' in error_message.lower() or 'password' in error_message.lower(): 
                 print("[{}]\tCredentials are invalid".format(username))
                 return False, error_message
