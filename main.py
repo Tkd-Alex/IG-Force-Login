@@ -66,4 +66,6 @@ def hello():
 if __name__ == '__main__':
     if not os.path.exists("sessions"):
         os.makedirs("sessions")
+    if not os.path.exists("screenshot"):
+        os.makedirs("screenshot")    
     app.run(host='0.0.0.0', port=4587, threaded=True, debug=False)

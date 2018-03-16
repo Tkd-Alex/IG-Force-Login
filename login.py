@@ -5,9 +5,16 @@ from time import sleep
 import pickle, json, os
 from pprint import pprint
 
+def screenshot(browser, filename):
+    try:
+        browser.save_screenshot('./screenshot/{}.png'.format(filename))
+    except Exception as e:
+        print("[Error]\n{}".format(e))
+
 def bypass_suspicious_login(browser, verify_code_mail, username):
     try:
         close_button = browser.find_element_by_xpath("[text()='Close']")
+        screenshot(browser, "4-{}".format(username))
         ActionChains(browser).move_to_element(close_button).click().perform()
         sleep(0.1)
         print("[{}]\tClick 'Close' button".format(username))
@@ -16,6 +23,7 @@ def bypass_suspicious_login(browser, verify_code_mail, username):
 
     try:
         this_was_me_button = browser.find_element_by_xpath("//button[@name='choice'][text()='This Was Me']")
+        screenshot(browser, "5-{}".format(username))
         ActionChains(browser).move_to_element(this_was_me_button).click().perform()
         sleep(0.1)
         print("[{}]\tClick 'This Was Me'".format(username))
@@ -24,6 +32,7 @@ def bypass_suspicious_login(browser, verify_code_mail, username):
 
     try:
         back_button = browser.find_element_by_xpath("//a[@class='_rg5d7']")
+        screenshot(browser, "6-{}".format(username))
         ActionChains(browser).move_to_element(back_button).click().perform()
         sleep(0.1)
         print("[{}]\tClick 'Go Back' link".format(username))
@@ -47,6 +56,7 @@ def bypass_suspicious_login(browser, verify_code_mail, username):
         print("[{}]\tUnable to locate email or phone button, maybe bypass_suspicious_login=True isn't needed anymore.".format(username))
         return True, "Unable to locate email or phone button, maybe bypass_suspicious_login=True isn't needed anymore."
 
+    screenshot(browser, "7-{}".format(username))
     send_security_code_button = browser.find_element_by_xpath(("//button[text()='Send Security Code']"))
     (ActionChains(browser)
      .move_to_element(send_security_code_button)
@@ -84,7 +94,9 @@ def send_code(browser, username, security_code):
     .move_to_element(security_code_field)
     .click().send_keys(security_code).perform())
     print("[{}]\tWrite the security code: ".format(username, security_code))    
-
+    
+    screenshot(browser, "10-{}".format(username))
+    
     submit_security_code_button = browser.find_element_by_xpath(("//button[text()='Submit']"))
     (ActionChains(browser)
     .move_to_element(submit_security_code_button)
@@ -166,6 +178,7 @@ def login_user(browser,
     input_password = browser.find_elements_by_xpath("//input[@name='password']")
     ActionChains(browser).move_to_element(input_password[0]).click().send_keys(password).perform()
     print("[{}]\tWrite password".format(username))
+    screenshot(browser, "2-{}".format(username))
 
     login_button = browser.find_element_by_xpath("//form/span/button[text()='Log in']")
     ActionChains(browser).move_to_element(login_button).click().perform()
@@ -174,6 +187,7 @@ def login_user(browser,
     try:
         error_message = browser.find_element_by_xpath("//p[@id='slfErrorAlert']").text
         if error_message != None and error_message != '':
+            screenshot(browser, "3-{}".format(username))
             print("[{}]\tError message: {}".format(username, error_message))            
             if 'user' in error_message.lower() or 'password' in error_message.lower(): 
                 print("[{}]\tCredentials are invalid".format(username))
@@ -188,6 +202,7 @@ def login_user(browser,
 
     try:
         if 'challenge' in browser.current_url and bypass_suspicious_attempt is False:
+            screenshot(browser, "8-{}".format(username))
             # Challenge required save session and ask user what he want to do
             pickle.dump({'cookie': browser.get_cookies(), 'url': browser.current_url}, open('sessions/{}_session.pkl'.format(username), 'wb'))
             print("[{}]\tChallenge required. Ask a code or confirm 'was me'".format(username))
@@ -202,6 +217,7 @@ def check_login(browser, username):
     nav = browser.find_elements_by_xpath('//nav')
     print()
     if len(nav) == 2:
+        screenshot(browser, "9-{}".format(username))
         pickle.dump(browser.get_cookies(), open('cookies/{}_cookie.pkl'.format(username), 'wb'))
         # Login success delete old session if exist
         if os.path.exists('sessions/{}_session.pkl'.format(username)):
