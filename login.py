@@ -12,6 +12,7 @@ def screenshot(browser, filename):
         print("[Error]\n{}".format(e))
 
 def bypass_suspicious_login(browser, verify_code_mail, username):
+    '''
     try:
         close_button = browser.find_element_by_xpath("[text()='Close']")
         screenshot(browser, "4-{}".format(username))
@@ -19,6 +20,7 @@ def bypass_suspicious_login(browser, verify_code_mail, username):
         print("[{}]\tClick 'Close' button".format(username))
     except NoSuchElementException:
         pass
+    '''
 
     try:
         this_was_me_button = browser.find_element_by_xpath("//button[@name='choice'][text()='This Was Me']")
