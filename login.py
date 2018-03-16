@@ -8,6 +8,7 @@ from pprint import pprint
 def screenshot(browser, filename):
     try:
         browser.save_screenshot('./screenshot/{}.png'.format(filename))
+        print("Filename: {}".format(filename))
     except Exception as e:
         print("[Error]\n{}".format(e))
 
@@ -33,7 +34,7 @@ def bypass_suspicious_login(browser, verify_code_mail, username):
     try:
         back_button = browser.find_element_by_xpath("//a[@class='_rg5d7'][text()='Go Back']")
         screenshot(browser, "6-{}".format(username))
-        sleep(0.5)
+        sleep(0.1)
         ActionChains(browser).move_to_element(back_button).click().perform()
         print("[{}]\tClick 'Go Back' link".format(username))
     except NoSuchElementException:
@@ -152,7 +153,7 @@ def login_user(browser,
     browser.get('https://www.instagram.com')
     login_elem = browser.find_elements_by_xpath("//*[contains(text(), 'Log in')]")
     
-    if len(login_elem) == 0:
+    if len(login_elem) == 0 and cookie_loaded is True:
         # Login success delete old session if exist
         print("[{}]\tLogin restored from cookie. Delete old session.".format(username))
         if os.path.exists('sessions/{}_session.pkl'.format(username)):
