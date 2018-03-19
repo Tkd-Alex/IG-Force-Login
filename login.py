@@ -28,13 +28,22 @@ def bypass_suspicious_login(browser, verify_code_mail, username):
 
     # Handle for windows with Next button (only mail or phone detected). The send message is wrong.
     try:
+        message = "A security code wast sent to you"
+        try:
+            phone_number = browser.find_element_by_xpath("//input[@id='phone_number']").get_attribute('value')
+            print("[{}]\tPhone number in input field: {}".format(username, phone_number))
+            message += ' {}'.format(phone_number)
+        except:
+            pass
+
         next_button = browser.find_element_by_xpath("//button[text()='Next']")
         ActionChains(browser).move_to_element(next_button).click().perform()
+
         print("[{}]\tClick 'Next'".format(username))
-        print('[{}]\tA security code wast sent to you'.format(username))
+        print('[{}]\t{}'.format(username, message))
         pickle.dump({'cookie': browser.get_cookies(), 'url': browser.current_url}, open('sessions/{}_session.pkl'.format(username), 'wb'))
         sleep(0.10)
-        return False, "A security code wast sent to you"
+        return False, message
     except NoSuchElementException:
         pass        
 
@@ -157,18 +166,17 @@ def login_user(browser,
         print("[{}]\tLogin restored from cookie. Delete old session.".format(username))
         if os.path.exists('sessions/{}_session.pkl'.format(username)):
             os.remove('sessions/{}_session.pkl'.format(username))
-        
-        # Please refactory:
-        try:
-            if 'challenge' in browser.current_url and bypass_suspicious_attempt is False:
-                # Challenge required save session and ask user what he want to do
-                pickle.dump({'cookie': browser.get_cookies(), 'url': browser.current_url}, open('sessions/{}_session.pkl'.format(username), 'wb'))
-                print("[{}]\tChallenge required. Ask a code or confirm 'was me'".format(username))
-                return False, "Challenge required. Ask a code or confirm 'was me'"
-        except:
-            pass
-                
-        return True, browser.get_cookies()
+
+        # The sessions is gone, relogin:
+        if 'challenge' in browser.current_url:
+            os.remove('cookies/{}_cookie.pkl'.format(username))
+            browser.delete_all_cookies()
+            browser.get('https://www.google.com')
+            sleep(1)
+            browser.get('https://www.instagram.com')
+            print("[{}]\tThe session is compromised, re-login".format(username))
+        else:        
+            return True, browser.get_cookies()
 
     if switch_language:
         try:
