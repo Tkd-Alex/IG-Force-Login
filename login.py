@@ -14,17 +14,10 @@ def wasme(browser, username):
         pass
 
 def bypass_suspicious_login(browser, verify_code_mail, username):
-    '''
-    try:
-        close_button = browser.find_element_by_xpath("[text()='Close']")
-        ActionChains(browser).move_to_element(close_button).click().perform()
-        print("[{}]\tClick 'Close' button".format(username))
-    except NoSuchElementException:
-        pass
-    '''
-
+    # First of all check if was me windows is enable
     wasme(browser, username)
 
+    # If the sessions is waiting for a security code we need to go back 
     try:
         back_button = browser.find_element_by_xpath("//a[@class='_rg5d7'][text()='Go Back']")
         sleep(0.10)
@@ -33,18 +26,20 @@ def bypass_suspicious_login(browser, verify_code_mail, username):
     except NoSuchElementException:
         pass
 
+    # Handle for windows with Next button (only mail or phone detected). The send message is wrong.
     try:
         next_button = browser.find_element_by_xpath("//button[text()='Next']")
         ActionChains(browser).move_to_element(next_button).click().perform()
         print("[{}]\tClick 'Next'".format(username))
-        print('[{}]\tA security code wast sent to your phone'.format(username))
-        message = 'A security code wast sent to your phone'
+        print('[{}]\tA security code wast sent to you'.format(username))
         pickle.dump({'cookie': browser.get_cookies(), 'url': browser.current_url}, open('sessions/{}_session.pkl'.format(username), 'wb'))
         sleep(0.10)
-        return False, message
+        return False, "A security code wast sent to you"
     except NoSuchElementException:
         pass        
 
+    # If verify_code_mail is True, get the text with mail address.
+    # Else catch radio_button, and try to click. If the click fails maybe the radio is not present.     
     try:
         if verify_code_mail:
             user_email = browser.find_element_by_xpath("//label[@for='choice_1']").text
@@ -52,23 +47,20 @@ def bypass_suspicious_login(browser, verify_code_mail, username):
             radio_phone = browser.find_element_by_xpath("//label[@for='choice_0']")
             user_phone = radio_phone.text 
             try:
-                (ActionChains(browser)
-                 .move_to_element(radio_phone)
-                 .click().perform())
+                (ActionChains(browser).move_to_element(radio_phone).click().perform())
             except:
-                print("[{}]\tUnable to click phone button".format(username))
-                return False, "Unable to click phone button"
-    except:
+                pass
+    except NoSuchElementException:
         print("[{}]\tUnable to locate email or phone button, maybe bypass_suspicious_login=True isn't needed anymore.".format(username))
         return True, "Unable to locate email or phone button, maybe bypass_suspicious_login=True isn't needed anymore."
 
-    send_security_code_button = browser.find_element_by_xpath(("//button[text()='Send Security Code']"))
-    (ActionChains(browser)
-     .move_to_element(send_security_code_button)
-     .click()
-     .perform())
-    
-    print("[{}]\tClick 'Send Security Code' button".format(username))
+    try:
+        send_security_code_button = browser.find_element_by_xpath(("//button[text()='Send Security Code']"))
+        (ActionChains(browser).move_to_element(send_security_code_button).click().perform())
+        print("[{}]\tClick 'Send Security Code' button".format(username))
+    except NoSuchElementException:
+        print("[{}]\tUnable to find/click security code".format(username))
+        return False, "Unable to find/click security code"
 
     print('[{}]\tInstagram detected an unusual login attempt'.format(username))
     if verify_code_mail:
@@ -126,10 +118,12 @@ def login_user(browser,
                bypass_suspicious_attempt=False,
                verify_code_mail=True):
     
+    # Going to instagram for create fake cookie sessions.
     browser.get('https://www.instagram.com')
     cookie_loaded = False
     session_loaded = False
 
+    # Try to loading cookie for restoring session.
     try:
         browser.get('https://www.google.com')
         for cookie in pickle.load(open('cookies/{}_cookie.pkl'.format(username), 'rb')):
@@ -154,6 +148,7 @@ def login_user(browser,
     if session_loaded is True:
         print("[{}]\tSession successfully loaded.".format(username))
 
+    # If the sessions is not restored start with Log in
     browser.get('https://www.instagram.com')
     login_elem = browser.find_elements_by_xpath("//*[contains(text(), 'Log in')]")
     
@@ -166,9 +161,6 @@ def login_user(browser,
         wasme(browser, username)
         return True, browser.get_cookies()
 
-    if cookie_loaded:
-        print("[{}]\tIssue with cookie for user " + username + ". Creating new cookie...".format(username))
-
     if switch_language:
         try:
             browser.find_element_by_xpath("//select[@class='_fsoey']/option[text()='English']").click()
@@ -180,19 +172,30 @@ def login_user(browser,
         ActionChains(browser).move_to_element(login_elem).click().perform()
         print("[{}]\tClick 'Log in' button".format(username))
 
+    # Populate username and password
     input_username = browser.find_elements_by_xpath("//input[@name='username']")
-
     ActionChains(browser).move_to_element(input_username[0]).click().send_keys(username).perform()
     print("[{}]\tWrite username".format(username))
     sleep(1)
+
     input_password = browser.find_elements_by_xpath("//input[@name='password']")
     ActionChains(browser).move_to_element(input_password[0]).click().send_keys(password).perform()
     print("[{}]\tWrite password".format(username))
-    
+
+    try:
+        show_password = browser.find_element_by_xpath("//a[@class='_97sa5'][text()='Show']")
+        ActionChains(browser).move_to_element(show_password).click().perform()
+        print("[{}]\tShow password link".format(username))
+    except NoSuchElementException:
+        pass
+
     login_button = browser.find_element_by_xpath("//form/span/button[text()='Log in']")
     ActionChains(browser).move_to_element(login_button).click().perform()
     print("[{}]\tClick 'Log in' button".format(username))
 
+    sleep(99999999999999999)
+
+    # Check if there is a error. If error contains user or password maybe the credentials is wrong. Return with error message
     try:
         error_message = browser.find_element_by_xpath("//p[@id='slfErrorAlert']").text
         if error_message != None and error_message != '':
@@ -203,11 +206,11 @@ def login_user(browser,
     except:
         pass
 
+    # Start bypass_suspicious_attempt
     if bypass_suspicious_attempt is True:
         status, message = bypass_suspicious_login(browser, verify_code_mail, username)
         if not status: 
             return status, message
-
     try:
         if 'challenge' in browser.current_url and bypass_suspicious_attempt is False:
             # Challenge required save session and ask user what he want to do
