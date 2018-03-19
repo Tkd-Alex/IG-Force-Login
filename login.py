@@ -165,8 +165,8 @@ def login_user(browser,
                 pickle.dump({'cookie': browser.get_cookies(), 'url': browser.current_url}, open('sessions/{}_session.pkl'.format(username), 'wb'))
                 print("[{}]\tChallenge required. Ask a code or confirm 'was me'".format(username))
                 return False, "Challenge required. Ask a code or confirm 'was me'"
-            except:
-                pass
+        except:
+            pass
                 
         return True, browser.get_cookies()
 
