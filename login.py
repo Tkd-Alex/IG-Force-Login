@@ -157,8 +157,17 @@ def login_user(browser,
         print("[{}]\tLogin restored from cookie. Delete old session.".format(username))
         if os.path.exists('sessions/{}_session.pkl'.format(username)):
             os.remove('sessions/{}_session.pkl'.format(username))
-        # After login maybe was me checked
-        wasme(browser, username)
+        
+        # Please refactory:
+        try:
+            if 'challenge' in browser.current_url and bypass_suspicious_attempt is False:
+                # Challenge required save session and ask user what he want to do
+                pickle.dump({'cookie': browser.get_cookies(), 'url': browser.current_url}, open('sessions/{}_session.pkl'.format(username), 'wb'))
+                print("[{}]\tChallenge required. Ask a code or confirm 'was me'".format(username))
+                return False, "Challenge required. Ask a code or confirm 'was me'"
+            except:
+                pass
+                
         return True, browser.get_cookies()
 
     if switch_language:
@@ -221,7 +230,7 @@ def login_user(browser,
     return check_login(browser, username)
 
 def check_login(browser, username):
-    print("[{}]\tCheck for login success.".format(username))
+    print("[{}]\tCheck login...".format(username))
     nav = browser.find_elements_by_xpath('//nav')
     print()
     if len(nav) == 2:

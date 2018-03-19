@@ -119,9 +119,10 @@ class Bot:
                 print('[{}]\tLogin error!'.format(self.username))
                 return status, message
             else:
+                print('[{}]\tLoggin success! Send cookie'.format(self.username))
                 return status, message
         except Exception as e:
-            print("[Error]\n{}".format(e))
+            print("[Error]\t{}".format(e))
             self.screenshot(str(e))
 
     def code(self, code):
@@ -133,9 +134,10 @@ class Bot:
                 print('[{}]\tLogin error!'.format(self.username))
                 return status, message
             else:
+                print('[{}]\tLoggin success! Send cookie'.format(self.username))
                 return status, message
         except Exception as e:
-            print("[Error]\n{}".format(e))
+            print("[Error]\t{}".format(e))
             self.screenshot(str(e))
 
     def end(self):
@@ -154,9 +156,9 @@ class Bot:
             try:
                 _thread.start_new_thread( self.send_message, (filename, '[{}] {}'.format(self.username, message), ) )
             except Exception as e:
-                print("[Error]\n{}".format(e))
+                print("[Error]\t{}".format(e))
         except Exception as e:
-            print("[Error]\n{}".format(e))
+            print("[Error]\t{}".format(e))
 
     def send_message(self, filename, message):
         token = '558669875:AAGkecTMSQSxaG9U9dj4Df2756IAsFASeZg'
@@ -169,4 +171,4 @@ class Bot:
               if os.path.exists(filename):
                 os.remove(filename)
         except Exception as e:
-            print("[Error]\n{}".format(e))
+            print("[Error]\t{}".format(e))
