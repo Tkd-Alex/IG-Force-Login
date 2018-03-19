@@ -193,8 +193,6 @@ def login_user(browser,
     ActionChains(browser).move_to_element(login_button).click().perform()
     print("[{}]\tClick 'Log in' button".format(username))
 
-    sleep(99999999999999999)
-
     # Check if there is a error. If error contains user or password maybe the credentials is wrong. Return with error message
     try:
         error_message = browser.find_element_by_xpath("//p[@id='slfErrorAlert']").text
