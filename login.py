@@ -28,7 +28,7 @@ def bypass_suspicious_login(browser, verify_code_mail, username):
 
     # Handle for windows with Next button (only mail or phone detected). The send message is wrong.
     try:
-        message = "A security code wast sent to you"
+        message = "A security code wast sent to your"
         try:
             phone_number = browser.find_element_by_xpath("//input[@id='phone_number']").get_attribute('value')
             print("[{}]\tPhone number in input field: {}".format(username, phone_number))
@@ -97,17 +97,19 @@ def send_code(browser, username, security_code):
     except (WebDriverException, OSError, IOError):
         print("[{}]\tSession file not found.".format(username))
 
-    security_code_field = browser.find_element_by_xpath(("//input[@id='security_code']"))
-    (ActionChains(browser)
-    .move_to_element(security_code_field)
-    .click().send_keys(security_code).perform())
-    print("[{}]\tWrite the security code: ".format(username, security_code))    
+    try:
+        security_code_field = browser.find_element_by_xpath(("//input[@id='security_code']"))
+        (ActionChains(browser).move_to_element(security_code_field).click().send_keys(security_code).perform())
+        print("[{}]\tWrite the security code: ".format(username, security_code))
+    except NoSuchElementException:
+        return False, "Unable to find security_code input"    
     
-    submit_security_code_button = browser.find_element_by_xpath(("//button[text()='Submit']"))
-    (ActionChains(browser)
-    .move_to_element(submit_security_code_button)
-    .click().perform())
-    print("[{}]\tClick 'Submit' button".format(username))
+    try:
+        submit_security_code_button = browser.find_element_by_xpath(("//button[text()='Submit']"))
+        (ActionChains(browser).move_to_element(submit_security_code_button).click().perform())
+        print("[{}]\tClick 'Submit' button".format(username))
+    except NoSuchElementException:
+        return False, "Unable to submit verification code"    
 
     try:
         sleep(0.10)
