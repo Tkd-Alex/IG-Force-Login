@@ -100,7 +100,7 @@ def send_code(browser, username, security_code):
     try:
         security_code_field = browser.find_element_by_xpath(("//input[@id='security_code']"))
         (ActionChains(browser).move_to_element(security_code_field).click().send_keys(security_code).perform())
-        print("[{}]\tWrite the security code: ".format(username, security_code))
+        print("[{}]\tWrite the security code: {}".format(username, security_code))
     except NoSuchElementException:
         return False, "Unable to find security_code input"    
     
