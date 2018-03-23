@@ -11,7 +11,7 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver import DesiredCapabilities
 
-from login import login_user, send_code
+from login import login_user, send_code, login_windscribe
 
 class Bot:
     def __init__(self,
@@ -25,7 +25,8 @@ class Bot:
                  proxy_address=None,
                  proxy_port=0,
                  bypass_suspicious_attempt=False,
-                 verify_code_mail=True):
+                 verify_code_mail=True,
+                 use_vpn=False):
 
         if nogui:
             self.display = Display(visible=0, size=(800, 600))
@@ -47,6 +48,8 @@ class Bot:
 
         self.bypass_suspicious_attempt = bypass_suspicious_attempt
         self.verify_code_mail = verify_code_mail
+
+        self.use_vpn = use_vpn
 
         self.aborting = False
 
@@ -88,21 +91,24 @@ class Bot:
 
             chrome_options.add_argument('--disable-gpu')
 
-            if self.proxy_address and self.proxy_port > 0:
+            if self.use_vpn:
+                chrome_options.add_extension('./windscribe.crx')
+
+            if self.proxy_address and self.proxy_port > 0 and self.use_vpn is False:
                 chrome_options.add_argument('--proxy-server={}:{}'.format(self.proxy_address, self.proxy_port))
 
-            if self.headless_browser:
+            if self.headless_browser and self.use_vpn is False:
                 chrome_options.add_argument('--headless')
         
             user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.50 Safari/537.36'
             chrome_options.add_argument('user-agent={user_agent}'.format(user_agent=user_agent))
-
+            
             chrome_prefs = {
                 'intl.accept_languages': 'en-US',
                 'profile.managed_default_content_settings.images': 2
             }
             chrome_options.add_experimental_option('prefs', chrome_prefs)
-
+            
             self.browser = webdriver.Chrome(chromedriver_location, chrome_options=chrome_options)
 
         self.browser.implicitly_wait(self.page_delay)
@@ -112,6 +118,9 @@ class Bot:
 
     def login(self):
         try:
+            if self.use_vpn:
+                login_windscribe(self.browser)
+            
             status, message = login_user(self.browser, self.username, self.password, self.switch_language, self.bypass_suspicious_attempt, self.verify_code_mail) 
             if not status:
                 self.screenshot(message)
@@ -127,6 +136,9 @@ class Bot:
 
     def code(self, code):
         try:
+            if self.use_vpn:
+                login_windscribe(self.browser)
+
             status, message = send_code(self.browser, self.username, code)
             if not status:
                 self.screenshot(message)

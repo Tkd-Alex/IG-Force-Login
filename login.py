@@ -1,6 +1,7 @@
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import WebDriverException
+from selenium.webdriver.common.keys import Keys
 from time import sleep
 import pickle, json, os
 from pprint import pprint
@@ -128,7 +129,7 @@ def login_user(browser,
                switch_language=True,
                bypass_suspicious_attempt=False,
                verify_code_mail=True):
-    
+
     # Going to instagram for create fake cookie sessions.
     browser.get('https://www.instagram.com')
     cookie_loaded = False
@@ -201,12 +202,14 @@ def login_user(browser,
     ActionChains(browser).move_to_element(input_password[0]).click().send_keys(password).perform()
     print("[{}]\tWrite password".format(username))
 
+    '''
     try:
         show_password = browser.find_element_by_xpath("//a[@class='_97sa5'][text()='Show']")
         ActionChains(browser).move_to_element(show_password).click().perform()
         print("[{}]\tShow password link".format(username))
     except NoSuchElementException:
         pass
+    '''
 
     login_button = browser.find_element_by_xpath("//form/span/button[text()='Log in']")
     ActionChains(browser).move_to_element(login_button).click().perform()
@@ -254,3 +257,22 @@ def check_login(browser, username):
         return True, browser.get_cookies()
     else:
         return False, "Unable to login"
+
+def login_windscribe(browser):
+    browser.get("chrome-extension://hnmpcagpplmpfojmgmnngilcnanddlhb/html/reactPopUp.html")
+    print("[VPN]\tOpen extension page")
+    
+    username = browser.find_element_by_xpath(("//input[@type='text']"))
+    ActionChains(browser).move_to_element(username).click().send_keys("tkdalex").perform()
+    print("[VPN]\tWrite username")
+    
+    password = browser.find_element_by_xpath(("//input[@type='password']"))
+    ActionChains(browser).move_to_element(password).click().send_keys("alessandro96").perform()
+    print("[VPN]\tWrite password")
+
+    password.send_keys(Keys.RETURN)
+    print("[VPN]\tSubmit form")
+    
+    sleep(5)
+    browser.switch_to.window(browser.window_handles[0])
+    print("[VPN]\tSwitch tab")

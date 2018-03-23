@@ -8,11 +8,13 @@ app = Flask(__name__)
 
 @app.route('/login', methods=['POST'])
 def login():
+	# Create a separated method for this.
     _data = request.get_json()
     proxy_address             = _data['proxy_address']              if 'proxy_address' in _data else "" 
     proxy_port                = _data['proxy_port']                 if 'proxy_port' in _data else 0
     bypass_suspicious_attempt = _data['bypass_suspicious_attempt']  if 'bypass_suspicious_attempt' in _data else False
     verify_code_mail          = _data['verify_code_mail']           if 'verify_code_mail' in _data else False
+    use_vpn          		  = _data['use_vpn']           			if 'use_vpn' in _data else False
     session = Bot(
         username=_data['username'],
         password=_data['password'],
@@ -22,7 +24,8 @@ def login():
         verify_code_mail=verify_code_mail,
         nogui=True,
         headless_browser=True,
-        page_delay=10
+        page_delay=10,
+        use_vpn=use_vpn
     )
     status, message = session.login()
     js = json.dumps({ 'result': status, 'message': message })
@@ -39,6 +42,7 @@ def code():
     proxy_port                 = _data['proxy_port']                 if 'proxy_port' in _data else 0
     bypass_suspicious_attempt  = _data['bypass_suspicious_attempt']  if 'bypass_suspicious_attempt' in _data else False
     verify_code_mail           = _data['verify_code_mail']           if 'verify_code_mail' in _data else False
+    use_vpn          		   = _data['use_vpn']           		 if 'use_vpn' in _data else False
     session = Bot(
         username=_data['username'],
         password=_data['password'],
@@ -48,7 +52,8 @@ def code():
         verify_code_mail=verify_code_mail,
         nogui=True,
         headless_browser=True,
-        page_delay=10
+        page_delay=10,
+        use_vpn=use_vpn
     )
     status, message = session.code(_data['code'])
     js = json.dumps({ 'result': status, 'message': message })
