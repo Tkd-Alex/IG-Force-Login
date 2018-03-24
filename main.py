@@ -6,27 +6,33 @@ import json, pickle, os, time
 
 app = Flask(__name__)
 
+def parse_params(params):
+    data = params
+    data['proxy_address']             = params['proxy_address']              if 'proxy_address' in params else "" 
+    data['proxy_port']                = params['proxy_port']                 if 'proxy_port' in params else 0
+    data['bypass_suspicious_attempt'] = params['bypass_suspicious_attempt']  if 'bypass_suspicious_attempt' in params else False
+    data['verify_code_mail']          = params['verify_code_mail']           if 'verify_code_mail' in params else False
+    data['use_vpn']                   = params['use_vpn']                    if 'use_vpn' in params else False
+    return data
+
+def init_bot(params):
+    return Bot(
+        username = params['username'],
+        password = params['password'],
+        proxy_address = params['proxy_address'],
+        proxy_port = int(params['proxy_port']),
+        bypass_suspicious_attempt = params['bypass_suspicious_attempt'],
+        verify_code_mail = params['verify_code_mail'],
+        use_vpn = params['use_vpn'],
+        nogui = True,
+        headless_browser = True,
+        page_delay = 10
+    )
+
 @app.route('/login', methods=['POST'])
 def login():
-	# Create a separated method for this.
-    _data = request.get_json()
-    proxy_address             = _data['proxy_address']              if 'proxy_address' in _data else "" 
-    proxy_port                = _data['proxy_port']                 if 'proxy_port' in _data else 0
-    bypass_suspicious_attempt = _data['bypass_suspicious_attempt']  if 'bypass_suspicious_attempt' in _data else False
-    verify_code_mail          = _data['verify_code_mail']           if 'verify_code_mail' in _data else False
-    use_vpn          		  = _data['use_vpn']           			if 'use_vpn' in _data else False
-    session = Bot(
-        username=_data['username'],
-        password=_data['password'],
-        proxy_address=proxy_address,
-        proxy_port=int(proxy_port),
-        bypass_suspicious_attempt=bypass_suspicious_attempt,
-        verify_code_mail=verify_code_mail,
-        nogui=True,
-        headless_browser=True,
-        page_delay=10,
-        use_vpn=use_vpn
-    )
+    data = parse_params(request.get_json())
+    session = init_bot(data)
     status, message = session.login()
     js = json.dumps({ 'result': status, 'message': message })
     session.end()
@@ -37,25 +43,9 @@ def login():
 
 @app.route('/code', methods=['POST'])
 def code():
-    _data = request.get_json()
-    proxy_address              = _data['proxy_address']              if 'proxy_address' in _data else ""
-    proxy_port                 = _data['proxy_port']                 if 'proxy_port' in _data else 0
-    bypass_suspicious_attempt  = _data['bypass_suspicious_attempt']  if 'bypass_suspicious_attempt' in _data else False
-    verify_code_mail           = _data['verify_code_mail']           if 'verify_code_mail' in _data else False
-    use_vpn          		   = _data['use_vpn']           		 if 'use_vpn' in _data else False
-    session = Bot(
-        username=_data['username'],
-        password=_data['password'],
-        proxy_address=proxy_address,
-        proxy_port=int(proxy_port),
-        bypass_suspicious_attempt=bypass_suspicious_attempt,
-        verify_code_mail=verify_code_mail,
-        nogui=True,
-        headless_browser=True,
-        page_delay=10,
-        use_vpn=use_vpn
-    )
-    status, message = session.code(_data['code'])
+    data = parse_params(request.get_json())
+    session = init_bot(data)
+    status, message = session.code(data['code'])
     js = json.dumps({ 'result': status, 'message': message })
     session.end()
     if status:
