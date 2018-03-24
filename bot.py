@@ -122,14 +122,8 @@ class Bot:
                 login_windscribe(self.browser)
             
             status, message = login_user(self.browser, self.username, self.password, self.switch_language, self.bypass_suspicious_attempt, self.verify_code_mail) 
-            if not status:
-                self.screenshot(message)
-                self.aborting = True
-                print('[{}]\tLogin error!'.format(self.username))
-                return status, message
-            else:
-                print('[{}]\tLoggin success! Send cookie'.format(self.username))
-                return status, message
+            return self.return_status(status, message)
+
         except Exception as e:
             print("[Error]\t{}".format(e))
             self.screenshot(str(e))
@@ -140,17 +134,26 @@ class Bot:
                 login_windscribe(self.browser)
 
             status, message = send_code(self.browser, self.username, code)
-            if not status:
-                self.screenshot(message)
-                self.aborting = True
-                print('[{}]\tLogin error!'.format(self.username))
-                return status, message
-            else:
-                print('[{}]\tLoggin success! Send cookie'.format(self.username))
-                return status, message
+            return self.return_status(status, message)
+
         except Exception as e:
             print("[Error]\t{}".format(e))
             self.screenshot(str(e))
+
+    def return_status(self, status, message):
+        if not status:
+            self.screenshot(message)
+            self.aborting = True
+            print('[{}]\tLogin error!'.format(self.username))
+            return status, message
+        else:
+            print('[{}]\tLoggin success! Send cookie'.format(self.username))
+            try:
+                with open('history_login.txt', 'a') as f:
+                    f.write("{}\t{}\t{}\n".format(datetime.now(), self.username, "VPN" if self.use_vpn else "{}:{}".format(self.proxy_address, self.proxy_port)))
+            except Exception as e:
+                pass
+            return status, message
 
     def end(self):
         self.browser.delete_all_cookies()
