@@ -3,7 +3,7 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.common.keys import Keys
 from time import sleep
-import pickle, json, os
+import pickle, json, os, random, time
 from pprint import pprint
 
 def wasme(browser, username):
@@ -137,21 +137,23 @@ def login_user(browser,
 
     # Try to loading cookie for restoring session.
     try:
-        browser.get('https://www.google.com')
-        for cookie in pickle.load(open('cookies/{}_cookie.pkl'.format(username), 'rb')):
-            browser.add_cookie(cookie)
-            cookie_loaded = True
+        if os.path.isfile('cookies/{}_cookie.pkl'.format(username)):
+            browser.get('https://www.google.com')
+            for cookie in pickle.load(open('cookies/{}_cookie.pkl'.format(username), 'rb')):
+                browser.add_cookie(cookie)
+                cookie_loaded = True
     except (WebDriverException, OSError, IOError):
         print("[{}]\tCookie file not found, creating cookie...".format(username))
 
     # Check if we have a session open for example for challenge required
     if not cookie_loaded:
         try:
-            browser.get('https://www.google.com')
-            session = pickle.load(open('sessions/{}_session.pkl'.format(username), 'rb'))
-            for cookie in session['cookie']:
-                browser.add_cookie(cookie)
-                session_loaded = True
+            if os.path.isfile('sessions/{}_session.pkl'.format(username).format(username)):
+                browser.get('https://www.google.com')
+                session = pickle.load(open('sessions/{}_session.pkl'.format(username), 'rb'))
+                for cookie in session['cookie']:
+                    browser.add_cookie(cookie)
+                    session_loaded = True
         except (WebDriverException, OSError, IOError):
             print("[{}]\tSession file not found.".format(username))
     else:
@@ -167,7 +169,7 @@ def login_user(browser,
     if len(login_elem) == 0 and cookie_loaded is True:
         # Login success delete old session if exist
         print("[{}]\tLogin restored from cookie. Delete old session.".format(username))
-        if os.path.exists('sessions/{}_session.pkl'.format(username)):
+        if os.path.isfile('sessions/{}_session.pkl'.format(username)):
             os.remove('sessions/{}_session.pkl'.format(username))
 
         # The sessions is gone, relogin:
@@ -249,7 +251,7 @@ def check_login(browser, username):
     if len(nav) == 2:
         pickle.dump(browser.get_cookies(), open('cookies/{}_cookie.pkl'.format(username), 'wb'))
         # Login success delete old session if exist
-        if os.path.exists('sessions/{}_session.pkl'.format(username)):
+        if os.path.isfile('sessions/{}_session.pkl'.format(username)):
             os.remove('sessions/{}_session.pkl'.format(username))
 
         # After login maybe was me checked
@@ -259,6 +261,7 @@ def check_login(browser, username):
         return False, "Unable to login"
 
 def login_windscribe(browser):
+    print("[VPN]\tWindscribe!")
     browser.get("chrome-extension://hnmpcagpplmpfojmgmnngilcnanddlhb/html/reactPopUp.html")
     print("[VPN]\tOpen extension page")
     
@@ -274,5 +277,44 @@ def login_windscribe(browser):
     print("[VPN]\tSubmit form")
     
     sleep(5)
-    browser.switch_to.window(browser.window_handles[0])
     print("[VPN]\tSwitch tab")
+    browser.switch_to.window(browser.window_handles[0])
+
+    try:
+        print("[VPN]\tGoing to location page")
+        location = browser.find_element_by_xpath("//a[@class='locationChooser']")
+        ActionChains(browser).move_to_element(location).click().perform()
+        
+        countrylist = browser.find_elements_by_xpath("//div[@class='allowed location_item']")
+        random.seed(time.clock())
+        country = random.choice(countrylist)
+        print("[VPN]\tRandom country: {}".format(country.text))
+        ActionChains(browser).move_to_element(country).click().perform()
+    except:
+        pass
+        
+    sleep(5)
+    
+def poweron_hola(browser):
+    print("[VPN]\tHola!")
+    countrylist = [
+        'AF','AL','DZ','AX','AS','AD','AO','AP','AI','AQ','AG','AR','AM','AW','AU','AT','AZ','BS','BH','JE','BD','BB','BY','BE','BZ','BJ','BM','BT','BO','BQ','BA','WF',
+        'BW','BV','BR','IO','BN','BG','BF','BI','KH','CM','CA','CV','KY','CF','TD','CL','CN','CX','CC','CO','KM','CG','CK','CR','HR','CU','CW','CY','CZ','CD','DK','EH',
+        'DJ','DM','DO','TP','EC','EG','SV','GQ','ER','EU','EE','ET','FK','FO','FJ','FI','FR','FX','GF','PF','TF','GA','GM','GE','DE','GH','GI','GB','GR','GL','GD','WS',
+        'GP','GU','GT','GG','GN','GW','GY','HT','HM','HN','HK','HU','IS','IN','ID','IR','IQ','IE','IM','IL','IT','JM','JP','JO','KZ','KE','KI','KW','KG','LA','LV','YE',
+        'LB','LS','LR','LY','LI','LT','LU','MO','MK','MG','MW','MY','MV','ML','MT','MH','MQ','MR','MU','YT','MX','FM','MD','MC','MN','ME','MS','MA','MZ','MM','NA','YU',
+        'NR','NP','NL','AN','NC','NZ','NI','NE','NG','NU','NF','KP','MP','NO','OM','PK','PW','PS','PA','PG','PY','PE','PH','PN','PL','PT','PR','QA','RE','RO','RU','ZM',
+        'RW','BL','SH','KN','LC','MF','PM','VC','SM','SX','ST','SA','SN','RS','SC','SL','SG','SK','SI','SB','SO','ZA','GS','KR','SS','ES','LK','SD','SR','SJ','SZ','ZW',
+        'SE','CH','SY','TW','TJ','TZ','TH','TL','TG','TK','TO','TT','TN','TR','TM','TC','TV','UG','UA','AE','UK','US','UM','UY','UZ','VU','VA','VE','VN','VG','VI'
+    ]
+    random.seed(time.clock())
+    coutry = random.choice(countrylist)
+    print("[VPN]\tCountry random: {}".format(coutry))
+    print("[VPN]\tGoing to instagram.com")
+    browser.get("http://hola.org/access/instagram.com/using/vpn-{}?go=2".format(coutry.lower()))
+    sleep(6)
+    # Create custom exstension.crx. Not need switchtab
+    #browser.switch_to.window(browser.window_handles[0])
+    #print("[VPN]\tSwitch tab")
+
+
