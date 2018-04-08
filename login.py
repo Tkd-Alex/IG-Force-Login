@@ -261,60 +261,71 @@ def check_login(browser, username):
         return False, "Unable to login"
 
 def login_windscribe(browser):
-    print("[VPN]\tWindscribe!")
-    browser.get("chrome-extension://hnmpcagpplmpfojmgmnngilcnanddlhb/html/reactPopUp.html")
-    print("[VPN]\tOpen extension page")
-    
-    username = browser.find_element_by_xpath(("//input[@type='text']"))
-    ActionChains(browser).move_to_element(username).click().send_keys("tkdalex").perform()
-    print("[VPN]\tWrite username")
-    
-    password = browser.find_element_by_xpath(("//input[@type='password']"))
-    ActionChains(browser).move_to_element(password).click().send_keys("alessandro96").perform()
-    print("[VPN]\tWrite password")
-
-    password.send_keys(Keys.RETURN)
-    print("[VPN]\tSubmit form")
-    
-    sleep(5)
-    print("[VPN]\tSwitch tab")
-    browser.switch_to.window(browser.window_handles[0])
-
     try:
-        print("[VPN]\tGoing to location page")
-        location = browser.find_element_by_xpath("//a[@class='locationChooser']")
-        ActionChains(browser).move_to_element(location).click().perform()
+        print("[VPN]\tWindscribe!")
+        browser.get("chrome-extension://hnmpcagpplmpfojmgmnngilcnanddlhb/html/reactPopUp.html")
+        print("[VPN]\tOpen extension page")
         
-        countrylist = browser.find_elements_by_xpath("//div[@class='allowed location_item']")
-        random.seed(time.clock())
-        country = random.choice(countrylist)
-        print("[VPN]\tRandom country: {}".format(country.text))
-        ActionChains(browser).move_to_element(country).click().perform()
-    except:
-        pass
+        sleep(3)
+        username = browser.find_element_by_xpath(("//input[@type='text']"))
+        ActionChains(browser).move_to_element(username).click().send_keys("tkdalex").perform()
+        print("[VPN]\tWrite username")
         
-    sleep(5)
+        password = browser.find_element_by_xpath(("//input[@type='password']"))
+        ActionChains(browser).move_to_element(password).click().send_keys("alessandro96").perform()
+        print("[VPN]\tWrite password")
+
+        password.send_keys(Keys.RETURN)
+        print("[VPN]\tSubmit form")
+        
+        sleep(5)
+        print("[VPN]\tSwitch tab")
+        browser.switch_to.window(browser.window_handles[0])
+
+        try:
+            print("[VPN]\tGoing to location page")
+            location = browser.find_element_by_xpath("//a[@class='locationChooser']")
+            ActionChains(browser).move_to_element(location).click().perform()
+            
+            countrylist = browser.find_elements_by_xpath("//div[@class='allowed location_item']")
+            random.seed(time.clock())
+            country = random.choice(countrylist)
+            print("[VPN]\tRandom country: {}".format(country.text))
+            ActionChains(browser).move_to_element(country).click().perform()
+        except:
+            pass
+
+        sleep(5)
+
+    except Exception as e:
+        # If windscribe find try with hola
+        print("[Error]\t{}".format(e))
+        poweron_hola(browser)
     
 def poweron_hola(browser):
-    print("[VPN]\tHola!")
-    countrylist = [
-        'AF','AL','DZ','AX','AS','AD','AO','AP','AI','AQ','AG','AR','AM','AW','AU','AT','AZ','BS','BH','JE','BD','BB','BY','BE','BZ','BJ','BM','BT','BO','BQ','BA','WF',
-        'BW','BV','BR','IO','BN','BG','BF','BI','KH','CM','CA','CV','KY','CF','TD','CL','CN','CX','CC','CO','KM','CG','CK','CR','HR','CU','CW','CY','CZ','CD','DK','EH',
-        'DJ','DM','DO','TP','EC','EG','SV','GQ','ER','EU','EE','ET','FK','FO','FJ','FI','FR','FX','GF','PF','TF','GA','GM','GE','DE','GH','GI','GB','GR','GL','GD','WS',
-        'GP','GU','GT','GG','GN','GW','GY','HT','HM','HN','HK','HU','IS','IN','ID','IR','IQ','IE','IM','IL','IT','JM','JP','JO','KZ','KE','KI','KW','KG','LA','LV','YE',
-        'LB','LS','LR','LY','LI','LT','LU','MO','MK','MG','MW','MY','MV','ML','MT','MH','MQ','MR','MU','YT','MX','FM','MD','MC','MN','ME','MS','MA','MZ','MM','NA','YU',
-        'NR','NP','NL','AN','NC','NZ','NI','NE','NG','NU','NF','KP','MP','NO','OM','PK','PW','PS','PA','PG','PY','PE','PH','PN','PL','PT','PR','QA','RE','RO','RU','ZM',
-        'RW','BL','SH','KN','LC','MF','PM','VC','SM','SX','ST','SA','SN','RS','SC','SL','SG','SK','SI','SB','SO','ZA','GS','KR','SS','ES','LK','SD','SR','SJ','SZ','ZW',
-        'SE','CH','SY','TW','TJ','TZ','TH','TL','TG','TK','TO','TT','TN','TR','TM','TC','TV','UG','UA','AE','UK','US','UM','UY','UZ','VU','VA','VE','VN','VG','VI'
-    ]
-    random.seed(time.clock())
-    coutry = random.choice(countrylist)
-    print("[VPN]\tCountry random: {}".format(coutry))
-    print("[VPN]\tGoing to instagram.com")
-    browser.get("http://hola.org/access/instagram.com/using/vpn-{}?go=2".format(coutry.lower()))
-    sleep(6)
-    # Create custom exstension.crx. Not need switchtab
-    #browser.switch_to.window(browser.window_handles[0])
-    #print("[VPN]\tSwitch tab")
+    try:
+        print("[VPN]\tHola!")
+        countrylist = [
+            'AF','AL','DZ','AX','AS','AD','AO','AP','AI','AQ','AG','AR','AM','AW','AU','AT','AZ','BS','BH','JE','BD','BB','BY','BE','BZ','BJ','BM','BT','BO','BQ','BA','WF',
+            'BW','BV','BR','IO','BN','BG','BF','BI','KH','CM','CA','CV','KY','CF','TD','CL','CN','CX','CC','CO','KM','CG','CK','CR','HR','CU','CW','CY','CZ','CD','DK','EH',
+            'DJ','DM','DO','TP','EC','EG','SV','GQ','ER','EU','EE','ET','FK','FO','FJ','FI','FR','FX','GF','PF','TF','GA','GM','GE','DE','GH','GI','GB','GR','GL','GD','WS',
+            'GP','GU','GT','GG','GN','GW','GY','HT','HM','HN','HK','HU','IS','IN','ID','IR','IQ','IE','IM','IL','IT','JM','JP','JO','KZ','KE','KI','KW','KG','LA','LV','YE',
+            'LB','LS','LR','LY','LI','LT','LU','MO','MK','MG','MW','MY','MV','ML','MT','MH','MQ','MR','MU','YT','MX','FM','MD','MC','MN','ME','MS','MA','MZ','MM','NA','YU',
+            'NR','NP','NL','AN','NC','NZ','NI','NE','NG','NU','NF','KP','MP','NO','OM','PK','PW','PS','PA','PG','PY','PE','PH','PN','PL','PT','PR','QA','RE','RO','RU','ZM',
+            'RW','BL','SH','KN','LC','MF','PM','VC','SM','SX','ST','SA','SN','RS','SC','SL','SG','SK','SI','SB','SO','ZA','GS','KR','SS','ES','LK','SD','SR','SJ','SZ','ZW',
+            'SE','CH','SY','TW','TJ','TZ','TH','TL','TG','TK','TO','TT','TN','TR','TM','TC','TV','UG','UA','AE','UK','US','UM','UY','UZ','VU','VA','VE','VN','VG','VI'
+        ]
+        random.seed(time.clock())
+        coutry = random.choice(countrylist)
+        print("[VPN]\tCountry random: {}".format(coutry))
+        print("[VPN]\tGoing to instagram.com")
+        browser.get("http://hola.org/access/instagram.com/using/vpn-{}?go=2".format(coutry.lower()))
+        sleep(6)
+        # Create custom exstension.crx. Not need switchtab
+        #browser.switch_to.window(browser.window_handles[0])
+        #print("[VPN]\tSwitch tab")
 
-
+    except Exception as e:
+        # If hola find try with windscribe
+        print("[Error]\t{}".format(e))
+        login_windscribe(browser)

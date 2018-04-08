@@ -140,7 +140,10 @@ class Bot:
     def code(self, code):
         try:
             if self.use_vpn:
-                login_windscribe(self.browser)
+                if self.name_vpn == "Hola":
+                    poweron_hola(self.browser)
+                else:
+                    login_windscribe(self.browser)
 
             status, message = send_code(self.browser, self.username, code)
             return self.return_status(status, message)
