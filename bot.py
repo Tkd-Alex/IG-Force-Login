@@ -121,9 +121,6 @@ class Bot:
         return self
 
     def login(self):
-        # For debuggin exepction 'was me'
-        if self.username == "causeexception":
-            return False, "Unable to login"
         try:
             if self.use_vpn:
                 poweron_hola(self.browser) if self.name_vpn == "Hola" else login_windscribe(self.browser)    
