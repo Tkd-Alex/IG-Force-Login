@@ -298,7 +298,7 @@ def login_windscribe(browser):
         sleep(5)
 
     except Exception as e:
-        # If windscribe find try with hola
+        # If windscribe fails try with hola
         print("[Error]\t{}".format(e))
         poweron_hola(browser)
     
@@ -326,6 +326,6 @@ def poweron_hola(browser):
         #print("[VPN]\tSwitch tab")
 
     except Exception as e:
-        # If hola find try with windscribe
+        # If hola fails try with windscribe
         print("[Error]\t{}".format(e))
         login_windscribe(browser)

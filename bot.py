@@ -94,14 +94,12 @@ class Bot:
             chrome_options.add_argument('--disable-gpu')
 
             if self.use_vpn:
-                if self.name_vpn == "Hola":
-                    chrome_options.add_extension('./holavpn.crx')
-                else:
-                    chrome_options.add_extension('./windscribe.crx')
+                chrome_options.add_extension('./holavpn.crx') if self.name_vpn == "Hola" else chrome_options.add_extension('./windscribe.crx')
 
             if self.proxy_address and self.proxy_port > 0 and self.use_vpn is False:
                 chrome_options.add_argument('--proxy-server={}:{}'.format(self.proxy_address, self.proxy_port))
 
+            # Can't use headless browser with exstension :(
             if self.headless_browser and self.use_vpn is False:
                 chrome_options.add_argument('--headless')
         
@@ -125,14 +123,15 @@ class Bot:
     def login(self):
         try:
             if self.use_vpn:
-                if self.name_vpn == "Hola":
-                    poweron_hola(self.browser)
-                else:
-                    login_windscribe(self.browser)
+                poweron_hola(self.browser) if self.name_vpn == "Hola" else login_windscribe(self.browser)    
             
             status, message = login_user(self.browser, self.username, self.password, self.switch_language, self.bypass_suspicious_attempt, self.verify_code_mail) 
             return self.return_status(status, message)
-
+        except TimeoutException as ex:
+            # Timeout exception! Change VPN and then try again
+            self.name_vpn = "Hola" if self.name_vpn == "Windscribe" else "Hola"
+            self.login()
+            print("[Error]\t{}".format(e))
         except Exception as e:
             print("[Error]\t{}".format(e))
             self.screenshot(str(e))
@@ -140,14 +139,15 @@ class Bot:
     def code(self, code):
         try:
             if self.use_vpn:
-                if self.name_vpn == "Hola":
-                    poweron_hola(self.browser)
-                else:
-                    login_windscribe(self.browser)
+                poweron_hola(self.browser) if self.name_vpn == "Hola" else login_windscribe(self.browser)
 
             status, message = send_code(self.browser, self.username, code)
             return self.return_status(status, message)
-
+        except TimeoutException as ex:
+            # Timeout exception! Change VPN and then try again
+            self.name_vpn = "Hola" if self.name_vpn == "Windscribe" else "Hola"
+            self.code(code)
+            print("[Error]\t{}".format(e))
         except Exception as e:
             print("[Error]\t{}".format(e))
             self.screenshot(str(e))
