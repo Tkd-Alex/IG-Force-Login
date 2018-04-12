@@ -30,7 +30,6 @@ def init_bot(params):
         use_vpn = params['use_vpn'],
         name_vpn= params['name_vpn'],
         nogui = True,
-        headless_browser = True,
         page_delay = 10
     )
 

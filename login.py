@@ -1,10 +1,11 @@
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import WebDriverException
+from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.keys import Keys
 from time import sleep
-import pickle, json, os, random, time
 from pprint import pprint
+import pickle, json, os, random, time
 
 def wasme(browser, username):
     try:
@@ -316,10 +317,10 @@ def poweron_hola(browser):
             'SE','CH','SY','TW','TJ','TZ','TH','TL','TG','TK','TO','TT','TN','TR','TM','TC','TV','UG','UA','AE','UK','US','UM','UY','UZ','VU','VA','VE','VN','VG','VI'
         ]
         random.seed(time.clock())
-        coutry = random.choice(countrylist)
-        print("[VPN]\tCountry random: {}".format(coutry))
+        country = random.choice(countrylist)
+        print("[VPN]\tCountry random: {}".format(country))
         print("[VPN]\tGoing to instagram.com")
-        browser.get("http://hola.org/access/instagram.com/using/vpn-{}?go=2".format(coutry.lower()))
+        browser.get("http://hola.org/access/instagram.com/using/vpn-{}?go=2".format(country.lower()))
         sleep(6)
         # Create custom exstension.crx. Not need switchtab
         #browser.switch_to.window(browser.window_handles[0])
