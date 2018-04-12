@@ -33,6 +33,22 @@ def init_bot(params):
         page_delay = 10
     )
 
+@app.route('/delete', methods=['POST'])
+def delete():
+    data = parse_params(request.get_json())
+    username = data['username']
+    try:
+        if os.path.isfile('cookies/{}_cookie.pkl'.format(username)):
+            os.remove('cookies/{}_cookie.pkl'.format(username))
+        if os.path.isfile('sessions/{}_session.pkl'.format(username)):
+            os.remove('sessions/{}_session.pkl'.format(username))
+        js = json.dumps({ 'result': True, 'message': "{} deleted".format(username) })
+        return Response(js, status=200, mimetype='application/json')
+    except Exception as e:
+        print("[Error]\t{}".format(e))
+        js = json.dumps({ 'result': False, 'message': "{} deleted fail".format(username) })
+        return Response(js, status=400, mimetype='application/json')
+
 @app.route('/login', methods=['POST'])
 def login():
     data = parse_params(request.get_json())
