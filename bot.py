@@ -10,6 +10,7 @@ from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver import DesiredCapabilities
+from selenium.common.exceptions import TimeoutException
 
 from login import login_user, send_code, login_windscribe, poweron_hola
 
