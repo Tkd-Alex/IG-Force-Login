@@ -149,7 +149,7 @@ def login_user(browser,
     # Check if we have a session open for example for challenge required
     if not cookie_loaded:
         try:
-            if os.path.isfile('sessions/{}_session.pkl'.format(username).format(username)):
+            if os.path.isfile('sessions/{}_session.pkl'.format(username)):
                 browser.get('https://www.google.com')
                 session = pickle.load(open('sessions/{}_session.pkl'.format(username), 'rb'))
                 for cookie in session['cookie']:
@@ -248,7 +248,6 @@ def login_user(browser,
 def check_login(browser, username):
     print("[{}]\tCheck login...".format(username))
     nav = browser.find_elements_by_xpath('//nav')
-    print()
     if len(nav) == 2:
         pickle.dump(browser.get_cookies(), open('cookies/{}_cookie.pkl'.format(username), 'wb'))
         # Login success delete old session if exist
@@ -299,9 +298,8 @@ def login_windscribe(browser):
         sleep(5)
 
     except Exception as e:
-        # If windscribe fails try with hola
         print("[Error]\t{}".format(e))
-        poweron_hola(browser)
+        #poweron_hola(browser)
     
 def poweron_hola(browser):
     try:
@@ -327,6 +325,5 @@ def poweron_hola(browser):
         #print("[VPN]\tSwitch tab")
 
     except Exception as e:
-        # If hola fails try with windscribe
         print("[Error]\t{}".format(e))
-        login_windscribe(browser)
+        #login_windscribe(browser)

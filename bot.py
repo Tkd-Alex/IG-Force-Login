@@ -19,7 +19,6 @@ class Bot:
                  username=None,
                  password=None,
                  nogui=False,
-                 selenium_local_session=True,
                  use_firefox=False,
                  page_delay=25,
                  headless_browser=False,
@@ -28,7 +27,7 @@ class Bot:
                  bypass_suspicious_attempt=False,
                  verify_code_mail=True,
                  use_vpn=False,
-                 name_vpn="Windscribe"):
+                 name_vpn="Hola"):
 
         if nogui:
             self.display = Display(visible=0, size=(800, 600))
@@ -59,9 +58,7 @@ class Bot:
         if not os.path.exists("cookies"):
             os.makedirs("cookies")
 
-        if selenium_local_session:
-            self.set_selenium_local_session()
-
+        self.set_selenium_local_session()
 
     def set_selenium_local_session(self):
         if self.aborting:
@@ -128,13 +125,14 @@ class Bot:
             
             status, message = login_user(self.browser, self.username, self.password, self.switch_language, self.bypass_suspicious_attempt, self.verify_code_mail) 
             return self.return_status(status, message)
-        except TimeoutException as ex:
+        except TimeoutException as e:
             # Timeout exception! Change VPN and then try again
-            self.name_vpn = "Hola" if self.name_vpn == "Windscribe" else "Hola"
-            self.login()
+            #self.name_vpn = "Hola" if self.name_vpn == "Windscribe" else "Hola"
+            return self.login()
             print("[Error]\t{}".format(e))
         except Exception as e:
             print("[Error]\t{}".format(e))
+            self.return_status(False, "Unable to login")
             self.screenshot(str(e))
 
     def code(self, code):
@@ -144,13 +142,14 @@ class Bot:
 
             status, message = send_code(self.browser, self.username, code)
             return self.return_status(status, message)
-        except TimeoutException as ex:
+        except TimeoutException as e:
             # Timeout exception! Change VPN and then try again
-            self.name_vpn = "Hola" if self.name_vpn == "Windscribe" else "Hola"
-            self.code(code)
+            #self.name_vpn = "Hola" if self.name_vpn == "Windscribe" else "Hola"
+            return self.code(code)
             print("[Error]\t{}".format(e))
         except Exception as e:
             print("[Error]\t{}".format(e))
+            self.return_status(False, "Unable to login")
             self.screenshot(str(e))
 
     def return_status(self, status, message):
