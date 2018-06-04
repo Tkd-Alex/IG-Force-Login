@@ -1,6 +1,4 @@
-import csv, json, requests, _thread
-from math import ceil
-import os, time
+import csv, json, requests, _thread, pickle, os, time
 from datetime import datetime
 from sys import maxsize
 from pprint import pprint
@@ -50,12 +48,11 @@ class Bot:
         self.verify_code_mail = verify_code_mail
 
         self.use_vpn = use_vpn
-        self.vpn_country = None
+        
+        vpn_attempts = pickle.load(open("vpn_attempts.pkl","rb"))
+        self.vpn_country = vpn_attempts[username] if username in vpn_attempts else None
 
         self.aborting = False
-
-        if not os.path.exists("cookies"):
-            os.makedirs("cookies")
 
         self.set_selenium_local_session()
 
@@ -125,8 +122,8 @@ class Bot:
             status, message = login_user(self.browser, self.username, self.password, self.switch_language, self.bypass_suspicious_attempt, self.verify_code_mail) 
             return self.return_status(status, message)
         except TimeoutException as e:
-            return self.login()
             print("[Error]\t{}".format(e))
+            return self.login()
         except Exception as e:
             print("[Error]\t{}".format(e))
             self.return_status(False, "Unable to login")
@@ -152,6 +149,10 @@ class Bot:
             self.screenshot(message)
             self.aborting = True
             print('[{}]\tLogin error!'.format(self.username))
+            if message == "Challenge required. Ask a code or confirm 'was me'":
+                vpn_attempts = pickle.load(open("vpn_attempts.pkl","rb"))
+                vpn_attempts[self.username] = self.vpn_country
+                pickle.dump(vpn_attempts, open("vpn_attempts.pkl", "wb"))
             return status, message
         else:
             print('[{}]\tLoggin success! Send cookie'.format(self.username))

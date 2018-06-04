@@ -265,7 +265,7 @@ def poweron_hola(browser, country=None):
     try:
         print("[VPN]\tHola!")
         countrylist = [
-            'AF','AL','DZ','AX','AS','AD','AO','AP','AI','AQ','AG','AR','AM','AW','AU','AT','AZ','BS','BH','JE','BD','BB','BY','BE','BZ','BJ','BM','BT','BO','BQ','BA','WF',
+            'AF','AL','DZ','AS','AD','AO','AP','AI','AQ','AG','AR','AM','AW','AU','AT','AZ','BS','BH','JE','BD','BB','BY','BE','BZ','BJ','BM','BT','BO','BQ','BA','WF',
             'BW','BV','BR','IO','BN','BG','BF','BI','KH','CM','CA','CV','KY','CF','TD','CL','CN','CX','CC','CO','KM','CG','CK','CR','HR','CU','CW','CY','CZ','CD','DK','EH',
             'DJ','DM','DO','TP','EC','EG','SV','GQ','ER','EU','EE','ET','FK','FO','FJ','FI','FR','FX','GF','PF','TF','GA','GM','GE','DE','GH','GI','GB','GR','GL','GD','WS',
             'GP','GU','GT','GG','GN','GW','GY','HT','HM','HN','HK','HU','IS','IN','ID','IR','IQ','IE','IM','IL','IT','JM','JP','JO','KZ','KE','KI','KW','KG','LA','LV','YE',

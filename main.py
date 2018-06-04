@@ -74,9 +74,13 @@ def hello():
     message = "Viral-Force-Login Working on: {}".format(datetime.now().strftime('%Y/%m/%d %H:%M:%S'))
     return Response(message, status=200, mimetype='application/json')
 
-if __name__ == '__main__':
-    if not os.path.exists("sessions"):
-        os.makedirs("sessions")
-    if not os.path.exists("screenshot"):
-        os.makedirs("screenshot")    
+if __name__ == '__main__':  
+    folders = ["cookies", "sessions", "screenshot"]
+    for folder in folders:
+        if not os.path.exists(folder):
+            os.makedirs(folder)
+
+    if not os.path.exists("vpn_attempts.pkl"):
+        pickle.dump({}, open("vpn_attempts.pkl", "wb"))
+        
     app.run(host='0.0.0.0', port=4587, threaded=True, debug=False)
