@@ -194,15 +194,16 @@ def login_user(browser,
     if login_elem is not None:
         ActionChains(browser).move_to_element(login_elem).click().perform()
         print("[{}]\tClick 'Log in' button".format(username))
+    sleep(1)
 
     # Populate username and password
-    input_username = browser.find_elements_by_xpath("//input[@name='username']")
-    ActionChains(browser).move_to_element(input_username[0]).click().send_keys(username).perform()
+    input_username = browser.find_element_by_xpath("//input[@name='username']")
+    ActionChains(browser).move_to_element(input_username).click().send_keys(username).perform()
     print("[{}]\tWrite username".format(username))
     sleep(1)
 
-    input_password = browser.find_elements_by_xpath("//input[@name='password']")
-    ActionChains(browser).move_to_element(input_password[0]).click().send_keys(password).perform()
+    input_password = browser.find_element_by_xpath("//input[@name='password']")
+    ActionChains(browser).move_to_element(input_password).click().send_keys(password).perform()
     print("[{}]\tWrite password".format(username))
 
     '''
@@ -259,47 +260,6 @@ def check_login(browser, username):
         return True, browser.get_cookies()
     else:
         return False, "Unable to login"
-
-def login_windscribe(browser):
-    try:
-        print("[VPN]\tWindscribe!")
-        browser.get("chrome-extension://hnmpcagpplmpfojmgmnngilcnanddlhb/html/reactPopUp.html")
-        print("[VPN]\tOpen extension page")
-        
-        sleep(3)
-        username = browser.find_element_by_xpath(("//input[@type='text']"))
-        ActionChains(browser).move_to_element(username).click().send_keys("tkdalex").perform()
-        print("[VPN]\tWrite username")
-        
-        password = browser.find_element_by_xpath(("//input[@type='password']"))
-        ActionChains(browser).move_to_element(password).click().send_keys("alessandro96").perform()
-        print("[VPN]\tWrite password")
-
-        password.send_keys(Keys.RETURN)
-        print("[VPN]\tSubmit form")
-        
-        sleep(5)
-        print("[VPN]\tSwitch tab")
-        browser.switch_to.window(browser.window_handles[0])
-
-        try:
-            print("[VPN]\tGoing to location page")
-            location = browser.find_element_by_xpath("//a[@class='locationChooser']")
-            ActionChains(browser).move_to_element(location).click().perform()
-            
-            countrylist = browser.find_elements_by_xpath("//div[@class='allowed location_item']")
-            random.seed(time.clock())
-            country = random.choice(countrylist)
-            print("[VPN]\tRandom country: {}".format(country.text))
-            ActionChains(browser).move_to_element(country).click().perform()
-        except:
-            pass
-
-        sleep(5)
-
-    except Exception as e:
-        print("[Error]\t{}".format(e))
-        #poweron_hola(browser)
     
 def poweron_hola(browser):
     try:
@@ -320,10 +280,5 @@ def poweron_hola(browser):
         print("[VPN]\tGoing to instagram.com")
         browser.get("http://hola.org/access/instagram.com/using/vpn-{}?go=2".format(country.lower()))
         sleep(6)
-        # Create custom exstension.crx. Not need switchtab
-        #browser.switch_to.window(browser.window_handles[0])
-        #print("[VPN]\tSwitch tab")
-
     except Exception as e:
         print("[Error]\t{}".format(e))
-        #login_windscribe(browser)

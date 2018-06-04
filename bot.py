@@ -126,8 +126,6 @@ class Bot:
             status, message = login_user(self.browser, self.username, self.password, self.switch_language, self.bypass_suspicious_attempt, self.verify_code_mail) 
             return self.return_status(status, message)
         except TimeoutException as e:
-            # Timeout exception! Change VPN and then try again
-            #self.name_vpn = "Hola" if self.name_vpn == "Windscribe" else "Hola"
             return self.login()
             print("[Error]\t{}".format(e))
         except Exception as e:
@@ -143,10 +141,8 @@ class Bot:
             status, message = send_code(self.browser, self.username, code)
             return self.return_status(status, message)
         except TimeoutException as e:
-            # Timeout exception! Change VPN and then try again
-            #self.name_vpn = "Hola" if self.name_vpn == "Windscribe" else "Hola"
-            return self.code(code)
             print("[Error]\t{}".format(e))
+            return self.code(code)
         except Exception as e:
             print("[Error]\t{}".format(e))
             self.return_status(False, "Unable to login")
@@ -160,12 +156,6 @@ class Bot:
             return status, message
         else:
             print('[{}]\tLoggin success! Send cookie'.format(self.username))
-            # The logger login is put inside ViralBot
-            #try:
-            #    with open('history_login.txt', 'a') as f:
-            #        f.write("{}\t{}\t{}\n".format(datetime.now(), self.username, "VPN" if self.use_vpn else "{}:{}".format(self.proxy_address, self.proxy_port)))
-            #except Exception as e:
-            #    pass
             return status, message
 
     def end(self):
