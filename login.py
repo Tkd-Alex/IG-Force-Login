@@ -261,7 +261,7 @@ def check_login(browser, username):
     else:
         return False, "Unable to login"
     
-def poweron_hola(browser):
+def poweron_hola(browser, country=None):
     try:
         print("[VPN]\tHola!")
         countrylist = [
@@ -274,11 +274,13 @@ def poweron_hola(browser):
             'RW','BL','SH','KN','LC','MF','PM','VC','SM','SX','ST','SA','SN','RS','SC','SL','SG','SK','SI','SB','SO','ZA','GS','KR','SS','ES','LK','SD','SR','SJ','SZ','ZW',
             'SE','CH','SY','TW','TJ','TZ','TH','TL','TG','TK','TO','TT','TN','TR','TM','TC','TV','UG','UA','AE','UK','US','UM','UY','UZ','VU','VA','VE','VN','VG','VI'
         ]
-        random.seed(time.clock())
-        country = random.choice(countrylist)
+        if country is None:
+            random.seed(time.clock())
+            country = random.choice(countrylist)
         print("[VPN]\tCountry random: {}".format(country))
         print("[VPN]\tGoing to instagram.com")
         browser.get("http://hola.org/access/instagram.com/using/vpn-{}?go=2".format(country.lower()))
         sleep(6)
+        return country
     except Exception as e:
         print("[Error]\t{}".format(e))

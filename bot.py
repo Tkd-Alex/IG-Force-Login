@@ -12,7 +12,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver import DesiredCapabilities
 from selenium.common.exceptions import TimeoutException
 
-from login import login_user, send_code, login_windscribe, poweron_hola
+from login import login_user, send_code, poweron_hola
 
 class Bot:
     def __init__(self,
@@ -26,8 +26,7 @@ class Bot:
                  proxy_port=0,
                  bypass_suspicious_attempt=False,
                  verify_code_mail=True,
-                 use_vpn=False,
-                 name_vpn="Hola"):
+                 use_vpn=False):
 
         if nogui:
             self.display = Display(visible=0, size=(800, 600))
@@ -51,7 +50,7 @@ class Bot:
         self.verify_code_mail = verify_code_mail
 
         self.use_vpn = use_vpn
-        self.name_vpn = name_vpn
+        self.vpn_country = None
 
         self.aborting = False
 
@@ -92,7 +91,7 @@ class Bot:
             chrome_options.add_argument('--disable-gpu')
 
             if self.use_vpn:
-                chrome_options.add_extension('./holavpn.crx') if self.name_vpn == "Hola" else chrome_options.add_extension('./windscribe.crx')
+                chrome_options.add_extension('./holavpn.crx')
 
             if self.proxy_address and self.proxy_port > 0 and self.use_vpn is False:
                 chrome_options.add_argument('--proxy-server={}:{}'.format(self.proxy_address, self.proxy_port))
@@ -121,7 +120,7 @@ class Bot:
     def login(self):
         try:
             if self.use_vpn:
-                poweron_hola(self.browser) if self.name_vpn == "Hola" else login_windscribe(self.browser)    
+                self.vpn_country = poweron_hola(self.browser)
             
             status, message = login_user(self.browser, self.username, self.password, self.switch_language, self.bypass_suspicious_attempt, self.verify_code_mail) 
             return self.return_status(status, message)
@@ -136,7 +135,7 @@ class Bot:
     def code(self, code):
         try:
             if self.use_vpn:
-                poweron_hola(self.browser) if self.name_vpn == "Hola" else login_windscribe(self.browser)
+                self.vpn_country = poweron_hola(self.browser)
 
             status, message = send_code(self.browser, self.username, code)
             return self.return_status(status, message)

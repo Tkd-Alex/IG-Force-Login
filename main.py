@@ -14,9 +14,6 @@ def parse_params(params):
     data['verify_code_mail']          = params['verify_code_mail']           if 'verify_code_mail' in params else False
     data['use_vpn']                   = params['use_vpn']                    if 'use_vpn' in params else False
 
-    #random.seed(time.clock())
-    #vpn_list = ["Hola", "Windscribe"]
-    #data['name_vpn'] = random.choice(vpn_list)
     return data
 
 def init_bot(params):
