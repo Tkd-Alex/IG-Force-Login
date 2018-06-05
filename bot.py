@@ -48,7 +48,7 @@ class Bot:
         self.verify_code_mail = verify_code_mail
 
         self.use_vpn = use_vpn
-        
+        self.attempts = 0
         vpn_attempts = pickle.load(open("vpn_attempts.pkl","rb"))
         self.vpn_country = vpn_attempts[username] if username in vpn_attempts else None
 
@@ -123,7 +123,11 @@ class Bot:
             return self.return_status(status, message)
         except TimeoutException as e:
             print("[Error]\t{}".format(e))
-            return self.login()
+            self.attempts + 1
+            if self.attempts <= 5:
+                return self.login()
+            else:
+                raise Exception("Max attemps")
         except Exception as e:
             print("[Error]\t{}".format(e))
             self.return_status(False, "Unable to login")
@@ -138,7 +142,11 @@ class Bot:
             return self.return_status(status, message)
         except TimeoutException as e:
             print("[Error]\t{}".format(e))
-            return self.code(code)
+            self.attempts + 1
+            if self.attempts <= 5:
+                return self.code(code)
+            else:
+                raise Exception("Max attemps")
         except Exception as e:
             print("[Error]\t{}".format(e))
             self.return_status(False, "Unable to login")
