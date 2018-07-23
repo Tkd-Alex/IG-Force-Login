@@ -128,8 +128,7 @@ class Bot:
                 self.browser.quit()
                 
                 self.set_selenium_local_session()
-                status, message = self.login()
-                return self.return_status(status, message)
+                return self.login()
             else:
                 return self.return_status(status, message)
         except TimeoutException as e:
