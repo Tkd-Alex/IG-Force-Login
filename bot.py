@@ -120,7 +120,7 @@ class Bot:
                 self.vpn_country = poweron_hola(self.browser)
             
             status, message = login_user(self.browser, self.username, self.password, self.switch_language, self.bypass_suspicious_attempt, self.verify_code_mail)
-            if status is False and self.use_vpn is True:
+            if status is False and self.use_vpn is True and message != "Challenge required. Ask a code or confirm 'was me'":
                 self.use_vpn = False
                 print('[{}]\tTry again without VPN!'.format(self.username))
                 
@@ -128,7 +128,8 @@ class Bot:
                 self.browser.quit()
                 
                 self.set_selenium_local_session()
-                self.login()
+                status, message = self.login()
+                return self.return_status(status, message)
             else:
                 return self.return_status(status, message)
         except TimeoutException as e:
