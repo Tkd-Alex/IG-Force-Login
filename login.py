@@ -62,6 +62,13 @@ def bypass_suspicious_login(browser, verify_code_mail, username):
             except:
                 pass
     except NoSuchElementException:
+        try:
+            security_code_field = browser.find_element_by_xpath(("//input[@id='security_code']"))
+            if os.path.isfile('sessions/{}_session.pkl'.format(username)):
+                os.remove('sessions/{}_session.pkl'.format(username))
+            print("[{}]\tFound security_code field".format(username))
+        except NoSuchElementException:
+            pass    
         print("[{}]\tUnable to locate email or phone button, maybe bypass_suspicious_login=True isn't needed anymore.".format(username))
         return True, "Unable to locate email or phone button, maybe bypass_suspicious_login=True isn't needed anymore."
 
