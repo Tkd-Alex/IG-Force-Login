@@ -287,7 +287,7 @@ def poweron_hola(browser, country=None):
         print("[VPN]\tCountry random: {}".format(country))
         print("[VPN]\tGoing to instagram.com")
         browser.get("http://hola.org/access/instagram.com/using/vpn-{}?go=2".format(country.lower()))
-        sleep(6)
+        sleep(5)
         return country
     except Exception as e:
         print("[Error]\t{}".format(e))

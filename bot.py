@@ -116,8 +116,8 @@ class Bot:
 
     def login(self):
         try:
-            if self.use_vpn:
-                self.vpn_country = poweron_hola(self.browser)
+            if self.use_vpn and not os.path.isfile('cookies/{}_cookie.pkl'.format(self.username)):
+                self.vpn_country = poweron_hola(self.browser, self.vpn_country)
             
             status, message = login_user(self.browser, self.username, self.password, self.switch_language, self.bypass_suspicious_attempt, self.verify_code_mail)
             if status is False and self.use_vpn is True and message == "Credentials are invalid":
@@ -146,7 +146,7 @@ class Bot:
     def code(self, code):
         try:
             if self.use_vpn:
-                self.vpn_country = poweron_hola(self.browser)
+                self.vpn_country = poweron_hola(self.browser, self.vpn_country)
 
             status, message = send_code(self.browser, self.username, code)
             return self.return_status(status, message)
@@ -171,9 +171,14 @@ class Bot:
                 vpn_attempts = pickle.load(open("vpn_attempts.pkl","rb"))
                 vpn_attempts[self.username] = self.vpn_country
                 pickle.dump(vpn_attempts, open("vpn_attempts.pkl", "wb"))
+            else:
+                vpn_attempts = pickle.load(open("vpn_attempts.pkl","rb"))
+                if self.username in vpn_attempts:
+                    del vpn_attempts[self.username]
+                    pickle.dump(vpn_attempts, open("vpn_attempts.pkl", "wb"))
             return status, message
         else:
-            print('[{}]\tLoggin success! Send cookie'.format(self.username))
+            print('[{}]\tLogin success! Send cookie'.format(self.username))
             return status, message
 
     def end(self):
