@@ -120,7 +120,7 @@ class Bot:
                 self.vpn_country = poweron_hola(self.browser, self.vpn_country)
             
             status, message = login_user(self.browser, self.username, self.password, self.switch_language, self.bypass_suspicious_attempt, self.verify_code_mail)
-            if status is False and self.use_vpn is True and message == "Credentials are invalid":
+            if status is False and self.use_vpn is True and ("credentials" in message.lower() or "connect to Instagram" in  message.lower() ):
                 self.use_vpn = False
                 print('[{}]\tTry again without VPN!'.format(self.username))
                 
