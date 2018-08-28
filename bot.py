@@ -134,7 +134,7 @@ class Bot:
         except TimeoutException as e:
             print("[Error]\t{}".format(e))
             self.attempts + 1
-            if self.attempts <= 5:
+            if self.attempts <= 3:
                 return self.login()
             else:
                 raise Exception("Max attemps")
@@ -153,7 +153,7 @@ class Bot:
         except TimeoutException as e:
             print("[Error]\t{}".format(e))
             self.attempts + 1
-            if self.attempts <= 5:
+            if self.attempts <= 3:
                 return self.code(code)
             else:
                 raise Exception("Max attemps")
