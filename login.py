@@ -201,7 +201,8 @@ def login_user(browser,
     if login_elem is not None:
         ActionChains(browser).move_to_element(login_elem).click().perform()
         print("[{}]\tClick 'Log in' button".format(username))
-    sleep(1)
+    
+    sleep(3)
 
     # Populate username and password
     input_username = browser.find_element_by_xpath("//input[@name='username']")
