@@ -223,7 +223,8 @@ def login_user(browser,
         pass
     '''
 
-    login_button = browser.find_element_by_xpath("//form/span/button[text()='Log in']")
+    # login_button = browser.find_element_by_xpath("//form/span/button[text()='Log in']")
+    login_button = browser.find_element_by_xpath("//span[contains(@class, 'L3NKy') and text() = 'Log in']")
     ActionChains(browser).move_to_element(login_button).click().perform()
     print("[{}]\tClick 'Log in' button".format(username))
 
